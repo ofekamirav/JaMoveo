@@ -1,24 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+// src/App.tsx
+import { Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import SignupPage from "./pages/SignUpPage";
+import LoginPage from "./pages/LoginPage";
+// import HomePage from './pages/HomePage';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="bg-white-900 text-slate-200 min-h-screen font-sans">
+      <Navbar />
+      <main className="container mx-auto p-4 sm:p-6 lg:p-8">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <div className="text-center mt-20">
+                <h1 className="text-5xl font-extrabold mb-4">
+                  Welcome to JaMoveo
+                </h1>
+                <p className="text-xl text-slate-400">
+                  The best place for your band to practice and perform.
+                </p>
+              </div>
+            }
+          />
+
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<SignupPage />} />
+          <Route
+            path="/admin/register"
+            element={<SignupPage isAdmin={true} />}
+          />
+          {/* ----------------------------- */}
+        </Routes>
+      </main>
     </div>
   );
 }
