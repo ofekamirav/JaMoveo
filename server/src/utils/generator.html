@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <title>Song JSON Generator</title>
+    <style>
+        body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; padding: 20px; background-color: #f4f4f9; color: #333; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1, h2 { color: #444; }
+        textarea, pre { width: 100%; min-height: 200px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; padding: 10px; font-family: 'Courier New', Courier, monospace; font-size: 14px; margin-top: 10px; }
+        pre { background-color: #eef; color: #333; white-space: pre-wrap; word-break: break-all; }
+        button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; margin-top: 15px; }
+        button:hover { background-color: #0056b3; }
+        .flex-container { display: flex; gap: 20px; }
+        .flex-child { flex: 1; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Song to JSON Generator</h1>
+        <p>Paste the chords and lyrics from a site like Ultimate Guitar into the text box below. Ensure chords are on their own line directly above the lyrics line.</p>
+        
+        <div class="flex-container">
+            <div class="flex-child">
+                <h2>Input Text</h2>
+                <textarea id="inputText" placeholder="[Verse 1]&#10;Am      C&#10;Hey Jude, don't make it bad..."></textarea>
+            </div>
+            <div class="flex-child">
+                <h2>Generated JSON</h2>
+                <pre id="outputText">Your JSON will appear here...</pre>
+            </div>
+        </div>
+        <button onclick="generateJson()">Generate JSON</button>
+        <button onclick="copyToClipboard()">Copy to Clipboard</button>
+    </div>
+
+    <script>
+        function generateJson() {
+            const text = document.getElementById('inputText').value;
+            const lines = text.split('\n');
+            const song = [];
+            let i = 0;
+
+            while (i < lines.length) {
+                const currentLine = lines[i].trimEnd();
+                // Skip empty lines or section headers like [Verse], [Chorus]
+                if (currentLine === '' || currentLine.startsWith('[')) {
+                    i++;
+                    continue;
+                }
+
+                const nextLine = (i + 1 < lines.length) ? lines[i + 1].trimEnd() : '';
+                
+                // Heuristic: If a line contains common chord characters and the next line doesn't, it's a chord line.
+                // This is not perfect but works for most cases.
+                const isChordLine = /^[A-G][#b]?(m|maj|dim|aug|sus)?[0-9]?(\/[A-G][#b]?)?/.test(currentLine.split(' ')[0]) && nextLine !== '' && !currentLine.startsWith('[') ;
+                
+                if (isChordLine) {
+                    const parsedLine = parseChordLine(currentLine, nextLine);
+                    if(parsedLine.length > 0) song.push(parsedLine);
+                    i += 2; // Move past both chord and lyric line
+                } else {
+                    // It's a line with only lyrics
+                    const words = currentLine.split(' ').filter(w => w !== '');
+                    const lyricLine = words.map(word => ({ lyrics: word }));
+                    if(lyricLine.length > 0) song.push(lyricLine);
+                    i++;
+                }
+            }
+
+            document.getElementById('outputText').textContent = JSON.stringify(song, null, 4);
+        }
+
+        function parseChordLine(chordLine, lyricLine) {
+            const chords = [];
+            const regex = /(\S+)/g;
+            let match;
+            while ((match = regex.exec(chordLine)) !== null) {
+                chords.push({ chord: match[0], index: match.index });
+            }
+
+            if (chords.length === 0) {
+                 return lyricLine.split(' ').filter(w => w !== '').map(word => ({ lyrics: word }));
+            }
+            
+            const resultLine = [];
+            let lastIndex = 0;
+
+            chords.forEach((chordItem, i) => {
+                const nextChordIndex = (i + 1 < chords.length) ? chords[i + 1].index : lyricLine.length;
+                const lyricSegment = lyricLine.substring(lastIndex, nextChordIndex);
+                const words = lyricSegment.split(' ').filter(w => w !== '');
+                
+                words.forEach((word, wordIndex) => {
+                    if (wordIndex === 0) {
+                        resultLine.push({ lyrics: word, chords: chordItem.chord });
+                    } else {
+                        resultLine.push({ lyrics: word });
+                    }
+                });
+                lastIndex = nextChordIndex;
+            });
+            
+             // Add any remaining lyrics after the last chord
+            const remainingLyrics = lyricLine.substring(lastIndex);
+            const remainingWords = remainingLyrics.split(' ').filter(w => w.trim() !== '');
+            remainingWords.forEach(word => resultLine.push({ lyrics: word }));
+
+
+            return resultLine;
+        }
+        
+        function copyToClipboard() {
+            const text = document.getElementById('outputText').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('JSON copied to clipboard!');
+            }, (err) => {
+                alert('Failed to copy text: ', err);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 interface SignupPageProps {
   isAdmin?: boolean;
@@ -18,12 +19,14 @@ const instruments = [
 ];
 
 const SignupPage: React.FC<SignupPageProps> = ({ isAdmin = false }) => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [instrument, setInstrument] = useState(instruments[0]);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
 
@@ -32,7 +35,7 @@ const SignupPage: React.FC<SignupPageProps> = ({ isAdmin = false }) => {
     setError("");
     setSuccessMessage("");
 
-    if (!email || !password || (!isAdmin && !instrument)) {
+    if (!name || !email || !password || (!isAdmin && !instrument)) {
       setError("You must fill in all required fields.");
       return;
     }
@@ -41,8 +44,8 @@ const SignupPage: React.FC<SignupPageProps> = ({ isAdmin = false }) => {
       isAdmin ? "admin/register" : "register"
     }`;
     const body = isAdmin
-      ? { email, password }
-      : { email, password, instrument };
+      ? { name, email, password }
+      : { name, email, password, instrument };
 
     try {
       const response = await fetch(url, {
@@ -59,7 +62,13 @@ const SignupPage: React.FC<SignupPageProps> = ({ isAdmin = false }) => {
       setSuccessMessage(
         `${isAdmin ? "Admin" : "Player"} successfully registered!`
       );
-      setTimeout(() => navigate("/login"), 2000);
+      login({
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+        role: data.role,
+        instrument: data.instrument,
+      });
+      navigate(isAdmin ? "/admin" : "/live");
     } catch (err: any) {
       setError(err.message);
     }
@@ -72,6 +81,22 @@ const SignupPage: React.FC<SignupPageProps> = ({ isAdmin = false }) => {
           {isAdmin ? "Admin Registration" : "Create Account"}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition"
+              required
+            />
+          </div>
           <div>
             <label
               htmlFor="email"

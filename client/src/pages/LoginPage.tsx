@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
 
@@ -26,10 +28,13 @@ const LoginPage: React.FC = () => {
         throw new Error(data.message || "Login failed");
       }
 
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("refreshToken", data.refreshToken);
-      localStorage.setItem("role", data.role);
-      localStorage.setItem("instrument", data.instrument);
+      login({
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+        role: data.role,
+        instrument: data.instrument,
+        name: data.name,
+      });
 
       if (data.role === "admin") {
         navigate("/admin");

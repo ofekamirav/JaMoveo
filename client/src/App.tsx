@@ -3,7 +3,8 @@ import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import SignupPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
-// import HomePage from './pages/HomePage';
+import LivePage from "./pages/LivePage";
+import AdminResultsWithSearch from "./pages/AdminResultsWithSearch";
 
 function App() {
   return (
@@ -15,10 +16,10 @@ function App() {
             path="/"
             element={
               <div className="text-center mt-20">
-                <h1 className="text-5xl font-extrabold mb-4">
+                <h1 className="text-blue-900 text-5xl font-extrabold mb-4">
                   Welcome to JaMoveo
                 </h1>
-                <p className="text-xl text-slate-400">
+                <p className="text-xl text-orange-600">
                   The best place for your band to practice and perform.
                 </p>
               </div>
@@ -31,7 +32,10 @@ function App() {
             path="/admin/register"
             element={<SignupPage isAdmin={true} />}
           />
-          {/* ----------------------------- */}
+
+          <Route path="/admin" element={<AdminResultsWithSearch />} />
+
+          <Route path="/live/:songId" element={<LivePage />} />
         </Routes>
       </main>
     </div>

@@ -1,0 +1,44 @@
+[
+    {
+        "id": "hey_jude",
+        "title": "Hey Jude",
+        "artist": "The Beatles",
+        "filePath": "/data/songs/hey_jude.json"
+    },
+    {
+        "id": "veech_shelo",
+        "title": "ואיך שלא",
+        "artist": "אריאל זילבר",
+        "filePath": "/data/songs/veech_shelo.json"
+    },
+    {
+        "id": "viva_la_vida",
+        "title": "Viva La Vida",
+        "artist": "Coldplay",
+        "filePath": "/data/songs/viva_la_vida.json"
+    },
+    {
+        "id": "imagine",
+        "title": "Imagine",
+        "artist": "John Lennon",
+        "filePath": "/data/songs/imagine.json"
+    },
+    {
+        "id": "bohemian_rhapsody",
+        "title": "Bohemian Rhapsody",
+        "artist": "Queen",
+        "filePath": "/data/songs/bohemian_rhapsody.json"
+    },
+    {
+        "id": "goodie_bag",
+        "title": "Goodie Bag",
+        "artist": "Still Woozy",
+        "filePath": "/data/songs/goodie_bag.json"
+    },
+    {
+        "id": "no_world",
+        "title": "אין עולם",
+        "artist": "יסמין מועלם",
+        "filePath": "/data/songs/no_world.json"
+    }
+]
