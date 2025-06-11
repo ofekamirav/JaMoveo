@@ -69,7 +69,7 @@ const register = async (req: Request, res: Response): Promise<void> => {
         await user.save();
 
         res.status(201).json({
-            _id: user._id,
+            userId: user._id,
             name: user.name,
             email: user.email,
             instrument: user.instrument,
@@ -114,7 +114,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
         await user.save();
 
         res.status(200).json({
-            _id: user._id,
+            userId: user._id,
             name: user.name,
             email: user.email,
             instrument: user.instrument,
@@ -181,20 +181,31 @@ const refresh = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        res.status(401).json({ message: 'Not authorized, no token provided.' });
+    const authHeader = req.headers['authorization'];
+    
+    if (typeof authHeader !== 'string' || !authHeader.startsWith('Bearer ')) {
+        console.error("authMiddleware FAILED: Header is missing or malformed.", authHeader);
+        res.status(401).json({ message: 'Not authorized, token is missing or malformed.' });
         return;
     }
 
-    const token = authHeader.split(' ')[1];
-    
+    const token = authHeader.substring(7); 
+
     try {
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as CustomJwtPayload;
+        
+        if (!decoded || !decoded._id) {
+            console.error("authMiddleware FAILED: Token payload is invalid.", decoded);
+            res.status(401).json({ message: 'Not authorized, token is invalid.' });
+            return;
+        }
+
         req.user = { _id: decoded._id }; 
+        console.log(`authMiddleware SUCCESS: User ${decoded._id} authorized.`);
         next();
     } catch (error) {
-        res.status(401).json({ message: 'Not authorized, token failed.' });
+        console.error("authMiddleware FAILED: Token verification failed.", error);
+        res.status(401).json({ message: 'Not authorized, token failed verification.' });
     }
 };
 

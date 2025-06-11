@@ -1,10 +1,11 @@
-// src/App.tsx
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import SignupPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 import LivePage from "./pages/LivePage";
 import AdminResultsWithSearch from "./pages/AdminResultsWithSearch";
+import NoSessionPage from "./pages/NoSessionPage";
+import LandingPage from "./pages/LandingPage";
 
 function App() {
   return (
@@ -12,20 +13,7 @@ function App() {
       <Navbar />
       <main className="container mx-auto p-4 sm:p-6 lg:p-8">
         <Routes>
-          <Route
-            path="/"
-            element={
-              <div className="text-center mt-20">
-                <h1 className="text-blue-900 text-5xl font-extrabold mb-4">
-                  Welcome to JaMoveo
-                </h1>
-                <p className="text-xl text-orange-600">
-                  The best place for your band to practice and perform.
-                </p>
-              </div>
-            }
-          />
-
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<SignupPage />} />
           <Route
@@ -35,7 +23,9 @@ function App() {
 
           <Route path="/admin" element={<AdminResultsWithSearch />} />
 
-          <Route path="/live/:songId" element={<LivePage />} />
+          <Route path="/live/:sessionId" element={<LivePage />} />
+
+          <Route path="/live/no-session" element={<NoSessionPage />} />
         </Routes>
       </main>
     </div>

@@ -34,12 +34,24 @@ const LoginPage: React.FC = () => {
         role: data.role,
         instrument: data.instrument,
         name: data.name,
+        userId: data._id,
       });
 
       if (data.role === "admin") {
         navigate("/admin");
       } else {
-        navigate("/player");
+        const res = await fetch(`${API_BASE_URL}/rehearsals/active`, {
+          headers: {
+            Authorization: `Bearer ${data.accessToken}`,
+          },
+        });
+
+        if (res.ok) {
+          const session = await res.json();
+          navigate(`/live/${session._id}`);
+        } else {
+          navigate("/live/no-session");
+        }
       }
     } catch (err: any) {
       setError(err.message);

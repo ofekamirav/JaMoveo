@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface AuthState {
+  userId: string | null;
   accessToken: string | null;
   refreshToken: string | null;
   role: "admin" | "player" | null;
@@ -15,6 +16,7 @@ interface AuthContextType extends AuthState {
 }
 
 const defaultState: AuthState = {
+  userId: null,
   name: null,
   accessToken: null,
   refreshToken: null,
@@ -41,6 +43,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const name = localStorage.getItem("name");
     if (accessToken && name) {
       setAuth({
+        userId: localStorage.getItem("userId"),
         name,
         accessToken,
         refreshToken: localStorage.getItem("refreshToken"),
@@ -53,6 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const login = (data: Partial<AuthState>) => {
     if (data.name) localStorage.setItem("name", data.name);
+    if (data.userId) localStorage.setItem("userId", data.userId);
     if (data.accessToken) localStorage.setItem("accessToken", data.accessToken);
     if (data.refreshToken)
       localStorage.setItem("refreshToken", data.refreshToken);
@@ -60,6 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     if (data.instrument) localStorage.setItem("instrument", data.instrument);
 
     setAuth({
+      userId: data.userId || null,
       name: data.name || null,
       accessToken: data.accessToken || null,
       refreshToken: data.refreshToken || null,
@@ -70,12 +75,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const logout = () => {
-    localStorage.removeItem("name");
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("role");
-    localStorage.removeItem("instrument");
-
+    localStorage.clear();
     setAuth(defaultState);
   };
 

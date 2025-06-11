@@ -1,8 +1,9 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, useNavigate, NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
   const { isLoggedIn, logout, name } = useAuth();
+  const navigate = useNavigate();
 
   const activeLinkStyle = "bg-orange-600 text-white";
   const inactiveLinkStyle =
@@ -29,7 +30,10 @@ const Navbar = () => {
           <div className="flex items-center space-x-2 md:space-x-4">
             {isLoggedIn ? (
               <button
-                onClick={logout}
+                onClick={() => {
+                  logout();
+                  navigate("/");
+                }}
                 className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300"
               >
                 Logout

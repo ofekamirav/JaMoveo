@@ -15,6 +15,7 @@ const AdminResultsWithSearch: React.FC = () => {
   const [error, setError] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
+  const [isCreatingSession, setIsCreatingSession] = useState(false);
 
   const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
 
@@ -50,10 +51,46 @@ const AdminResultsWithSearch: React.FC = () => {
     navigate(`/admin/?q=${encodeURIComponent(query)}`);
   };
 
-  const handleSelectSong = (songId: string) => {
-    navigate(`/live/${songId}`);
-  };
+  const handleSelectSong = async (songId: string) => {
+    setIsCreatingSession(true);
+    setError("");
+    try {
+      const token = localStorage.getItem("accessToken");
 
+      console.log("--- Preparing to create session ---");
+      console.log("Song ID to send:", songId);
+      console.log("Authorization Token to send:", token);
+
+      if (!token) {
+        setError("Authentication token not found. Please log in again.");
+        setIsCreatingSession(false);
+        return;
+      }
+
+      const response = await fetch(`${API_URL}/rehearsals`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ currentSongId: songId }),
+      });
+
+      const session = await response.json();
+
+      console.log("Server response:", session);
+
+      if (!response.ok) {
+        throw new Error(session.message || "Failed to create session.");
+      }
+
+      navigate(`/live/${session._id}`);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsCreatingSession(false);
+    }
+  };
   return (
     <div className="max-w-4xl mx-auto mt-12 px-4">
       <h2 className="text-2xl font-bold text-blue-900 mb-4">
@@ -75,7 +112,7 @@ const AdminResultsWithSearch: React.FC = () => {
         <div className="text-white text-center mt-8 animate-pulse">
           Loading results...
         </div>
-      ) : results.length === 0 ? (
+      ) : results.length >= 2 ? (
         <div className="text-gray-400 text-center mt-8">
           No songs found for "<span className="italic">{query}</span>".
           <br />
@@ -96,9 +133,14 @@ const AdminResultsWithSearch: React.FC = () => {
               </div>
               <button
                 onClick={() => handleSelectSong(song.id)}
+                disabled={isCreatingSession}
                 className="bg-red-600 hover:bg-red-800 text-white px-4 py-2 rounded-md"
               >
-                Select
+                {isCreatingSession ? (
+                  <span className="animate-spin">Creating...</span>
+                ) : (
+                  "Start Rehearsal"
+                )}
               </button>
             </li>
           ))}

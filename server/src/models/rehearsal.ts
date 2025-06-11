@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface IRehearsalSession extends Document {
   adminId: mongoose.Types.ObjectId;
   currentSongId?: string;
-  participants: string[]; // userIds
+  participants: string[]; 
   isActive: boolean;
 }
 
@@ -17,4 +17,5 @@ const rehearsalSchema = new Schema<IRehearsalSession>({
 });
 
 const RehearsalSession = mongoose.model<IRehearsalSession>('RehearsalSession', rehearsalSchema);
+
 export default RehearsalSession;

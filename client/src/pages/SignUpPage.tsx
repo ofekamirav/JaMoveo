@@ -13,9 +13,6 @@ const instruments = [
   "Saxophone",
   "Keyboards",
   "Vocals",
-  "Piano",
-  "Chello",
-  "Violin",
 ];
 
 const SignupPage: React.FC<SignupPageProps> = ({ isAdmin = false }) => {
