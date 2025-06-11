@@ -1,56 +1,51 @@
 [
     [
         {
-            "lyrics": "C"
-        },
-        {
-            "lyrics": "D7"
-        },
-        {
-            "lyrics": "G"
-        },
-        {
-            "lyrics": "Em"
-        },
-        {
-            "lyrics": "x2"
+            "lyrics": "[Intro]"
         }
     ],
     [
         {
-            "lyrics": "I",
+            "chords": "C"
+        },
+        {
+            "chords": "D"
+        },
+        {
+            "chords": "G"
+        },
+        {
             "chords": "Em"
+        },
+        {
+            "chords": "x2"
+        }
+    ],
+    [
+        {
+            "lyrics": "[Verse 1]"
+        }
+    ],
+    [
+        {
+            "lyrics": "I"
         },
         {
             "lyrics": "used"
         },
         {
-            "lyrics": "t"
+            "lyrics": "to"
         },
         {
-            "lyrics": "o",
+            "lyrics": "rule",
             "chords": "C"
         },
         {
-            "lyrics": "rule"
+            "lyrics": "the"
         },
         {
-            "lyrics": "th"
-        },
-        {
-            "lyrics": "e",
-            "chords": "D7"
-        },
-        {
-            "lyrics": "world"
-        }
-    ],
-    [
-        {
-            "lyrics": "G"
-        },
-        {
-            "lyrics": "Em"
+            "lyrics": "world",
+            "chords": "D"
         }
     ],
     [
@@ -61,7 +56,8 @@
             "lyrics": "would"
         },
         {
-            "lyrics": "rise"
+            "lyrics": "rise",
+            "chords": "G"
         },
         {
             "lyrics": "when"
@@ -76,15 +72,8 @@
             "lyrics": "the"
         },
         {
-            "lyrics": "word"
-        }
-    ],
-    [
-        {
-            "lyrics": "C"
-        },
-        {
-            "lyrics": "D7"
+            "lyrics": "word",
+            "chords": "Em"
         }
     ],
     [
@@ -104,18 +93,12 @@
             "lyrics": "I"
         },
         {
-            "lyrics": "sleep"
+            "lyrics": "sleep",
+            "chords": "C"
         },
         {
-            "lyrics": "alone"
-        }
-    ],
-    [
-        {
-            "lyrics": "G"
-        },
-        {
-            "lyrics": "Em"
+            "lyrics": "alone",
+            "chords": "D"
         }
     ],
     [
@@ -126,7 +109,8 @@
             "lyrics": "the"
         },
         {
-            "lyrics": "streets"
+            "lyrics": "streets",
+            "chords": "G"
         },
         {
             "lyrics": "I"
@@ -138,72 +122,83 @@
             "lyrics": "to"
         },
         {
-            "lyrics": "own"
-        }
-    ],
-    [
-        {
-            "lyrics": "C"
-        },
-        {
-            "lyrics": "D7"
-        },
-        {
-            "lyrics": "G"
-        },
-        {
-            "lyrics": "Em"
-        },
-        {
-            "lyrics": "x2"
-        }
-    ],
-    [
-        {
-            "lyrics": "I",
+            "lyrics": "own",
             "chords": "Em"
+        }
+    ],
+    [
+        {
+            "lyrics": "[Interlude]"
+        }
+    ],
+    [
+        {
+            "chords": "C"
+        },
+        {
+            "lyrics": "D",
+            "chords": "D"
+        },
+        {
+            "chords": "G"
+        },
+        {
+            "chords": "Em"
+        },
+        {
+            "chords": "x2"
+        }
+    ],
+    [
+        {
+            "lyrics": "[Verse 2]"
+        }
+    ],
+    [
+        {
+            "lyrics": "I"
         },
         {
             "lyrics": "used"
         },
         {
-            "lyrics": "t"
+            "lyrics": "to"
         },
         {
-            "lyrics": "o",
+            "lyrics": "roll",
             "chords": "C"
-        },
-        {
-            "lyrics": "roll"
         },
         {
             "lyrics": "the"
         },
         {
             "lyrics": "dice",
-            "chords": "D7"
+            "chords": "D"
         }
     ],
     [
         {
-            "lyrics": "G"
+            "lyrics": "Feel"
         },
         {
-            "lyrics": "Em"
-        }
-    ],
-    [
-        {
-            "lyrics": "C",
-            "chords": "in"
+            "lyrics": "the"
         },
         {
-            "lyrics": "D",
-            "chords": "enemy's"
+            "lyrics": "fear",
+            "chords": "G"
         },
         {
-            "lyrics": "7",
-            "chords": "eyes"
+            "lyrics": "in"
+        },
+        {
+            "lyrics": "my"
+        },
+        {
+            "lyrics": "enemy's"
+        },
+        {
+            "lyrics": "eyes",
+            "chords": "Em"
         }
     ],
     [
@@ -217,21 +212,15 @@
             "lyrics": "the"
         },
         {
-            "lyrics": "crowd"
+            "lyrics": "crowd",
+            "chords": "C"
         },
         {
             "lyrics": "would"
         },
         {
-            "lyrics": "sing:"
-        }
-    ],
-    [
-        {
-            "lyrics": "G"
-        },
-        {
-            "lyrics": "Em"
+            "lyrics": "sing:",
+            "chords": "D"
         }
     ],
     [
@@ -242,7 +231,8 @@
             "lyrics": "the"
         },
         {
-            "lyrics": "old"
+            "lyrics": "old",
+            "chords": "G"
         },
         {
             "lyrics": "king"
@@ -257,7 +247,8 @@
             "lyrics": "Long"
         },
         {
-            "lyrics": "live"
+            "lyrics": "live",
+            "chords": "Em"
         },
         {
             "lyrics": "the"
@@ -268,36 +259,24 @@
     ],
     [
         {
-            "lyrics": "One",
-            "chords": "Em"
+            "lyrics": "One"
         },
         {
             "lyrics": "minute"
         },
         {
-            "lyrics": "I",
+            "lyrics": "I"
+        },
+        {
+            "lyrics": "held",
             "chords": "C"
         },
         {
-            "lyrics": "held"
+            "lyrics": "the"
         },
         {
-            "lyrics": "th"
-        },
-        {
-            "lyrics": "e",
-            "chords": "D7"
-        },
-        {
-            "lyrics": "key"
-        }
-    ],
-    [
-        {
-            "lyrics": "G"
-        },
-        {
-            "lyrics": "Em"
+            "lyrics": "key",
+            "chords": "D"
         }
     ],
     [
@@ -308,7 +287,8 @@
             "lyrics": "the"
         },
         {
-            "lyrics": "walls"
+            "lyrics": "walls",
+            "chords": "G"
         },
         {
             "lyrics": "were"
@@ -320,25 +300,33 @@
             "lyrics": "on"
         },
         {
-            "lyrics": "me"
+            "lyrics": "me",
+            "chords": "Em"
         }
     ],
     [
         {
-            "lyrics": "C"
+            "lyrics": "And"
         },
         {
-            "lyrics": "D7"
-        }
-    ],
-    [
-        {
-            "lyrics": "G",
-            "chords": "I"
+            "lyrics": "I"
         },
         {
-            "lyrics": "Em",
-            "chords": "castles"
+            "lyrics": "discovered"
+        },
+        {
+            "lyrics": "that"
+        },
+        {
+            "lyrics": "my"
+        },
+        {
+            "lyrics": "castles",
+            "chords": "C"
+        },
+        {
+            "lyrics": "stand",
+            "chords": "D"
         }
     ],
     [
@@ -346,7 +334,8 @@
             "lyrics": "Upon"
         },
         {
-            "lyrics": "pillars"
+            "lyrics": "pillars",
+            "chords": "G"
         },
         {
             "lyrics": "of"
@@ -358,7 +347,8 @@
             "lyrics": "and"
         },
         {
-            "lyrics": "pillars"
+            "lyrics": "pillars",
+            "chords": "Em"
         },
         {
             "lyrics": "of"
@@ -369,10 +359,7 @@
     ],
     [
         {
-            "lyrics": "C"
-        },
-        {
-            "lyrics": "D7"
+            "lyrics": "[Chorus]"
         }
     ],
     [
@@ -380,13 +367,15 @@
             "lyrics": "I"
         },
         {
-            "lyrics": "hear"
+            "lyrics": "hear",
+            "chords": "C"
         },
         {
             "lyrics": "Jerusalem"
         },
         {
-            "lyrics": "bells"
+            "lyrics": "bells",
+            "chords": "D"
         },
         {
             "lyrics": "are"
@@ -430,7 +419,7 @@
         },
         {
             "lyrics": "sword,",
-            "chords": "D7"
+            "chords": "D"
         },
         {
             "lyrics": "and"
@@ -441,18 +430,11 @@
     ],
     [
         {
-            "lyrics": "G"
-        },
-        {
-            "lyrics": "Em"
-        }
-    ],
-    [
-        {
             "lyrics": "My"
         },
         {
-            "lyrics": "missionaries"
+            "lyrics": "missionaries",
+            "chords": "G"
         },
         {
             "lyrics": "in"
@@ -461,7 +443,8 @@
             "lyrics": "a"
         },
         {
-            "lyrics": "foreign"
+            "lyrics": "foreign",
+            "chords": "Em"
         },
         {
             "lyrics": "field"
@@ -483,7 +466,7 @@
         },
         {
             "lyrics": "can't",
-            "chords": "D7"
+            "chords": "D"
         },
         {
             "lyrics": "explain"
@@ -495,10 +478,10 @@
             "chords": "G"
         },
         {
-            "lyrics": "you"
+            "lyrics": "you'd"
         },
         {
-            "lyrics": "go"
+            "lyrics": "gone"
         },
         {
             "lyrics": "there"
@@ -522,15 +505,7 @@
         },
         {
             "lyrics": "word",
-            "chords": "D7"
-        }
-    ],
-    [
-        {
-            "lyrics": "Bm"
-        },
-        {
-            "lyrics": "Em"
+            "chords": "D"
         }
     ],
     [
@@ -541,7 +516,8 @@
             "lyrics": "was"
         },
         {
-            "lyrics": "when"
+            "lyrics": "when",
+            "chords": "Bm"
         },
         {
             "lyrics": "I"
@@ -553,30 +529,40 @@
             "lyrics": "the"
         },
         {
-            "lyrics": "world"
-        }
-    ],
-    [
-        {
-            "lyrics": "C"
-        },
-        {
-            "lyrics": "D7"
-        },
-        {
-            "lyrics": "G"
-        },
-        {
-            "lyrics": "Em"
-        },
-        {
-            "lyrics": "x2"
-        }
-    ],
-    [
-        {
-            "lyrics": "It",
+            "lyrics": "world",
             "chords": "Em"
+        }
+    ],
+    [
+        {
+            "lyrics": "[Interlude]"
+        }
+    ],
+    [
+        {
+            "chords": "C"
+        },
+        {
+            "chords": "D"
+        },
+        {
+            "chords": "G"
+        },
+        {
+            "chords": "Em"
+        },
+        {
+            "chords": "x2"
+        }
+    ],
+    [
+        {
+            "lyrics": "[Verse 3]"
+        }
+    ],
+    [
+        {
+            "lyrics": "It"
         },
         {
             "lyrics": "was"
@@ -588,36 +574,43 @@
             "lyrics": "wicked"
         },
         {
-            "lyrics": "an"
+            "lyrics": "and"
         },
         {
-            "lyrics": "d",
+            "lyrics": "wild",
             "chords": "C"
         },
         {
-            "lyrics": "wild"
-        },
-        {
             "lyrics": "wind",
-            "chords": "D7"
+            "chords": "D"
         }
     ],
     [
         {
-            "lyrics": "G"
+            "lyrics": "Blew"
         },
         {
-            "lyrics": "Em"
-        }
-    ],
-    [
-        {
-            "lyrics": "C",
-            "chords": "let"
+            "lyrics": "down"
         },
         {
-            "lyrics": "D7",
-            "chords": "in"
+            "lyrics": "the"
+        },
+        {
+            "lyrics": "doors",
+            "chords": "G"
+        },
+        {
+            "lyrics": "to"
+        },
+        {
+            "lyrics": "let"
+        },
+        {
+            "lyrics": "me"
+        },
+        {
+            "lyrics": "in",
+            "chords": "Em"
         }
     ],
     [
@@ -634,21 +627,15 @@
             "lyrics": "the"
         },
         {
-            "lyrics": "sound"
+            "lyrics": "sound",
+            "chords": "C"
         },
         {
             "lyrics": "of"
         },
         {
-            "lyrics": "drums"
-        }
-    ],
-    [
-        {
-            "lyrics": "G"
-        },
-        {
-            "lyrics": "Em"
+            "lyrics": "drums",
+            "chords": "D"
         }
     ],
     [
@@ -656,7 +643,8 @@
             "lyrics": "People"
         },
         {
-            "lyrics": "couldn't"
+            "lyrics": "couldn't",
+            "chords": "G"
         },
         {
             "lyrics": "believe"
@@ -665,7 +653,8 @@
             "lyrics": "what"
         },
         {
-            "lyrics": "I'd"
+            "lyrics": "I'd",
+            "chords": "Em"
         },
         {
             "lyrics": "become"
@@ -673,37 +662,37 @@
     ],
     [
         {
-            "lyrics": "Revolut",
-            "chords": "Em"
-        },
-        {
-            "lyrics": "ionarie",
+            "lyrics": "Revolutionaries",
             "chords": "C"
         },
         {
-            "lyrics": "s",
-            "chords": "D7"
-        },
-        {
-            "lyrics": "wait"
+            "lyrics": "wait",
+            "chords": "D"
         }
     ],
     [
         {
-            "lyrics": "G"
+            "lyrics": "For"
         },
         {
-            "lyrics": "Em"
-        }
-    ],
-    [
-        {
-            "lyrics": "C",
-            "chords": "silver"
+            "lyrics": "my"
         },
         {
-            "lyrics": "D7",
-            "chords": "plate"
+            "lyrics": "head",
+            "chords": "G"
+        },
+        {
+            "lyrics": "on"
+        },
+        {
+            "lyrics": "a"
+        },
+        {
+            "lyrics": "silver"
+        },
+        {
+            "lyrics": "plate",
+            "chords": "Em"
         }
     ],
     [
@@ -723,18 +712,12 @@
             "lyrics": "a"
         },
         {
-            "lyrics": "lonely"
+            "lyrics": "lonely",
+            "chords": "C"
         },
         {
-            "lyrics": "string"
-        }
-    ],
-    [
-        {
-            "lyrics": "G"
-        },
-        {
-            "lyrics": "Em"
+            "lyrics": "string",
+            "chords": "D"
         }
     ],
     [
@@ -742,7 +725,8 @@
             "lyrics": "Oh,"
         },
         {
-            "lyrics": "who"
+            "lyrics": "who",
+            "chords": "G"
         },
         {
             "lyrics": "would"
@@ -760,15 +744,13 @@
             "lyrics": "be"
         },
         {
-            "lyrics": "king?"
+            "lyrics": "king?",
+            "chords": "Em"
         }
     ],
     [
         {
-            "lyrics": "C"
-        },
-        {
-            "lyrics": "D7"
+            "lyrics": "[Chorus]"
         }
     ],
     [
@@ -776,13 +758,15 @@
             "lyrics": "I"
         },
         {
-            "lyrics": "hear"
+            "lyrics": "hear",
+            "chords": "C"
         },
         {
             "lyrics": "Jerusalem"
         },
         {
-            "lyrics": "bells"
+            "lyrics": "bells",
+            "chords": "D"
         },
         {
             "lyrics": "are"
@@ -826,7 +810,7 @@
         },
         {
             "lyrics": "sword,",
-            "chords": "D7"
+            "chords": "D"
         },
         {
             "lyrics": "and"
@@ -837,10 +821,10 @@
     ],
     [
         {
-            "lyrics": "G"
+            "lyrics": "Page"
         },
         {
-            "lyrics": "Em"
+            "lyrics": "2/3"
         }
     ],
     [
@@ -848,7 +832,8 @@
             "lyrics": "My"
         },
         {
-            "lyrics": "missionaries"
+            "lyrics": "missionaries",
+            "chords": "G"
         },
         {
             "lyrics": "in"
@@ -857,7 +842,8 @@
             "lyrics": "a"
         },
         {
-            "lyrics": "foreign"
+            "lyrics": "foreign",
+            "chords": "Em"
         },
         {
             "lyrics": "field"
@@ -879,7 +865,7 @@
         },
         {
             "lyrics": "can't",
-            "chords": "D7"
+            "chords": "D"
         },
         {
             "lyrics": "explain"
@@ -887,18 +873,11 @@
     ],
     [
         {
-            "lyrics": "G"
-        },
-        {
-            "lyrics": "Em"
-        }
-    ],
-    [
-        {
             "lyrics": "I"
         },
         {
-            "lyrics": "know"
+            "lyrics": "know",
+            "chords": "G"
         },
         {
             "lyrics": "Saint"
@@ -907,10 +886,11 @@
             "lyrics": "Peter"
         },
         {
-            "lyrics": "will"
+            "lyrics": "won't"
         },
         {
-            "lyrics": "call"
+            "lyrics": "call",
+            "chords": "Em"
         },
         {
             "lyrics": "my"
@@ -921,32 +901,18 @@
     ],
     [
         {
-            "lyrics": "C"
-        },
-        {
-            "lyrics": "D7"
-        }
-    ],
-    [
-        {
             "lyrics": "Never"
         },
         {
             "lyrics": "an"
         },
         {
-            "lyrics": "honest"
+            "lyrics": "honest",
+            "chords": "C"
         },
         {
-            "lyrics": "word"
-        }
-    ],
-    [
-        {
-            "lyrics": "Bm"
-        },
-        {
-            "lyrics": "Em"
+            "lyrics": "word",
+            "chords": "D"
         }
     ],
     [
@@ -960,287 +926,277 @@
             "lyrics": "was"
         },
         {
-            "lyrics": "when"
-        },
-        {
-            "lyrics": "I"
-        },
-        {
-            "lyrics": "ruled"
-        },
-        {
-            "lyrics": "the"
-        },
-        {
-            "lyrics": "world"
-        }
-    ],
-    [
-        {
-            "lyrics": "D7",
-            "chords": "C"
-        },
-        {
-            "lyrics": "D7",
-            "chords": "Em"
-        }
-    ],
-    [
-        {
-            "lyrics": "(Oh",
-            "chords": "C"
-        },
-        {
-            "lyrics": "hhhh",
-            "chords": "D7"
-        },
-        {
-            "lyrics": "Oh",
-            "chords": "G"
-        },
-        {
-            "lyrics": "hh",
-            "chords": "Em"
-        },
-        {
-            "lyrics": "Ohh"
-        },
-        {
-            "lyrics": "h)",
-            "chords": "x2"
-        }
-    ],
-    [
-        {
-            "lyrics": "C"
-        },
-        {
-            "lyrics": "D7"
-        }
-    ],
-    [
-        {
-            "lyrics": "I"
-        },
-        {
-            "lyrics": "hear"
-        },
-        {
-            "lyrics": "Jerusalem"
-        },
-        {
-            "lyrics": "bells"
-        },
-        {
-            "lyrics": "are"
-        },
-        {
-            "lyrics": "ringing"
-        }
-    ],
-    [
-        {
-            "lyrics": "Roman",
-            "chords": "G"
-        },
-        {
-            "lyrics": "Cavalry"
-        },
-        {
-            "lyrics": "choirs",
-            "chords": "Em"
-        },
-        {
-            "lyrics": "are"
-        },
-        {
-            "lyrics": "singing"
-        }
-    ],
-    [
-        {
-            "lyrics": "Be",
-            "chords": "C"
-        },
-        {
-            "lyrics": "my"
-        },
-        {
-            "lyrics": "mirror,"
-        },
-        {
-            "lyrics": "my"
-        },
-        {
-            "lyrics": "sword,",
-            "chords": "D7"
-        },
-        {
-            "lyrics": "and"
-        },
-        {
-            "lyrics": "shield"
-        }
-    ],
-    [
-        {
-            "lyrics": "G"
-        },
-        {
-            "lyrics": "Em"
-        }
-    ],
-    [
-        {
-            "lyrics": "My"
-        },
-        {
-            "lyrics": "missionaries"
-        },
-        {
-            "lyrics": "in"
-        },
-        {
-            "lyrics": "a"
-        },
-        {
-            "lyrics": "foreign"
-        },
-        {
-            "lyrics": "field"
-        }
-    ],
-    [
-        {
-            "lyrics": "For",
-            "chords": "C"
-        },
-        {
-            "lyrics": "some"
-        },
-        {
-            "lyrics": "reason"
-        },
-        {
-            "lyrics": "I"
-        },
-        {
-            "lyrics": "can't",
-            "chords": "D7"
-        },
-        {
-            "lyrics": "explain"
-        }
-    ],
-    [
-        {
-            "lyrics": "G"
-        },
-        {
-            "lyrics": "Em"
-        }
-    ],
-    [
-        {
-            "lyrics": "I"
-        },
-        {
-            "lyrics": "know"
-        },
-        {
-            "lyrics": "Saint"
-        },
-        {
-            "lyrics": "Peter"
-        },
-        {
-            "lyrics": "will"
-        },
-        {
-            "lyrics": "call"
-        },
-        {
-            "lyrics": "my"
-        },
-        {
-            "lyrics": "name"
-        }
-    ],
-    [
-        {
-            "lyrics": "C"
-        },
-        {
-            "lyrics": "D7"
-        }
-    ],
-    [
-        {
-            "lyrics": "Never"
-        },
-        {
-            "lyrics": "an"
-        },
-        {
-            "lyrics": "honest"
-        },
-        {
-            "lyrics": "word"
-        }
-    ],
-    [
-        {
-            "lyrics": "Bm"
-        },
-        {
-            "lyrics": "Em"
-        }
-    ],
-    [
-        {
-            "lyrics": "But"
-        },
-        {
-            "lyrics": "that"
-        },
-        {
-            "lyrics": "was"
-        },
-        {
-            "lyrics": "when"
-        },
-        {
-            "lyrics": "I"
-        },
-        {
-            "lyrics": "ruled"
-        },
-        {
-            "lyrics": "the"
-        },
-        {
-            "lyrics": "world"
-        }
-    ],
-    [
-        {
-            "lyrics": "Ooo",
-            "chords": "C"
-        },
-        {
-            "lyrics": "ooh",
-            "chords": "D7"
-        },
-        {
-            "lyrics": "Oooo",
+            "lyrics": "when",
             "chords": "Bm"
         },
         {
-            "lyrics": "oh",
+            "lyrics": "I"
+        },
+        {
+            "lyrics": "ruled"
+        },
+        {
+            "lyrics": "the"
+        },
+        {
+            "lyrics": "world",
+            "chords": "Em"
+        }
+    ],
+    [
+        {
+            "lyrics": "[Interlude]"
+        }
+    ],
+    [
+        {
+            "lyrics": "C"
+        },
+        {
+            "lyrics": "Em"
+        },
+        {
+            "lyrics": "x3"
+        }
+    ],
+    [
+        {
+            "chords": "D"
+        },
+        {
+            "chords": "D"
+        }
+    ],
+    [
+        {
+            "lyrics": "Ohhhhhh",
+            "chords": "CD"
+        },
+        {
+            "lyrics": "Ohhhhhhh",
+            "chords": "GEm"
+        }
+    ],
+    [
+        {
+            "lyrics": "Ohhhhhh",
+            "chords": "CD"
+        },
+        {
+            "lyrics": "Ohhhhhhh",
+            "chords": "GEm"
+        }
+    ],
+    [
+        {
+            "lyrics": "[Chorus]"
+        }
+    ],
+    [
+        {
+            "lyrics": "I"
+        },
+        {
+            "lyrics": "hear",
+            "chords": "C"
+        },
+        {
+            "lyrics": "Jerusalem"
+        },
+        {
+            "lyrics": "bells",
+            "chords": "D"
+        },
+        {
+            "lyrics": "are"
+        },
+        {
+            "lyrics": "ringing"
+        }
+    ],
+    [
+        {
+            "lyrics": "Roman",
+            "chords": "G"
+        },
+        {
+            "lyrics": "Cavalry"
+        },
+        {
+            "lyrics": "choirs",
             "chords": "Em"
         },
         {
-            "lyrics": "Oooooh"
+            "lyrics": "are"
+        },
+        {
+            "lyrics": "singing"
+        }
+    ],
+    [
+        {
+            "lyrics": "Be",
+            "chords": "C"
+        },
+        {
+            "lyrics": "my"
+        },
+        {
+            "lyrics": "mirror,"
+        },
+        {
+            "lyrics": "my"
+        },
+        {
+            "lyrics": "sword,",
+            "chords": "D"
+        },
+        {
+            "lyrics": "and"
+        },
+        {
+            "lyrics": "shield"
+        }
+    ],
+    [
+        {
+            "lyrics": "My"
+        },
+        {
+            "lyrics": "missionaries",
+            "chords": "G"
+        },
+        {
+            "lyrics": "in"
+        },
+        {
+            "lyrics": "a"
+        },
+        {
+            "lyrics": "foreign",
+            "chords": "Em"
+        },
+        {
+            "lyrics": "field"
+        }
+    ],
+    [
+        {
+            "lyrics": "For",
+            "chords": "C"
+        },
+        {
+            "lyrics": "some"
+        },
+        {
+            "lyrics": "reason"
+        },
+        {
+            "lyrics": "I"
+        },
+        {
+            "lyrics": "can't",
+            "chords": "D"
+        },
+        {
+            "lyrics": "explain"
+        }
+    ],
+    [
+        {
+            "lyrics": "I"
+        },
+        {
+            "lyrics": "know",
+            "chords": "G"
+        },
+        {
+            "lyrics": "Saint"
+        },
+        {
+            "lyrics": "Peter"
+        },
+        {
+            "lyrics": "won't"
+        },
+        {
+            "lyrics": "call",
+            "chords": "Em"
+        },
+        {
+            "lyrics": "my"
+        },
+        {
+            "lyrics": "name"
+        }
+    ],
+    [
+        {
+            "lyrics": "Never"
+        },
+        {
+            "lyrics": "an"
+        },
+        {
+            "lyrics": "honest",
+            "chords": "C"
+        },
+        {
+            "lyrics": "word",
+            "chords": "D"
+        }
+    ],
+    [
+        {
+            "lyrics": "But"
+        },
+        {
+            "lyrics": "that"
+        },
+        {
+            "lyrics": "was"
+        },
+        {
+            "lyrics": "when",
+            "chords": "Bm"
+        },
+        {
+            "lyrics": "I"
+        },
+        {
+            "lyrics": "ruled"
+        },
+        {
+            "lyrics": "the"
+        },
+        {
+            "lyrics": "world",
+            "chords": "Em"
+        }
+    ],
+    [
+        {
+            "lyrics": "[Outro]"
+        }
+    ],
+    [
+        {
+            "lyrics": "Oooooh",
+            "chords": "CD"
+        },
+        {
+            "lyrics": "Ooooooh",
+            "chords": "BmEm"
+        }
+    ],
+    [
+        {
+            "lyrics": "Oooooh",
+            "chords": "CD"
+        },
+        {
+            "lyrics": "Ooooooh",
+            "chords": "BmEm"
         }
     ]
 ]

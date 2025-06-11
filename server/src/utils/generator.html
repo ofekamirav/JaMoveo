@@ -2,24 +2,23 @@
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <title>Song JSON Generator</title>
+    <title>Song JSON Generator (v2)</title>
     <style>
         body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; padding: 20px; background-color: #f4f4f9; color: #333; }
         .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h1, h2 { color: #444; }
-        textarea, pre { width: 100%; min-height: 200px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; padding: 10px; font-family: 'Courier New', Courier, monospace; font-size: 14px; margin-top: 10px; }
+        h1, h2 { color: #444; border-bottom: 2px solid #eee; padding-bottom: 10px;}
+        textarea, pre { width: 100%; min-height: 250px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; padding: 10px; font-family: 'Courier New', Courier, monospace; font-size: 14px; margin-top: 10px; line-height: 1.5; }
         pre { background-color: #eef; color: #333; white-space: pre-wrap; word-break: break-all; }
-        button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; margin-top: 15px; }
+        button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; margin: 15px 5px 0 0; }
         button:hover { background-color: #0056b3; }
-        .flex-container { display: flex; gap: 20px; }
-        .flex-child { flex: 1; }
+        .flex-container { display: flex; flex-wrap: wrap; gap: 20px; }
+        .flex-child { flex: 1; min-width: 300px; }
     </style>
 </head>
 <body>
-
     <div class="container">
-        <h1>Song to JSON Generator</h1>
-        <p>Paste the chords and lyrics from a site like Ultimate Guitar into the text box below. Ensure chords are on their own line directly above the lyrics line.</p>
+        <h1>Song to JSON Generator (v2)</h1>
+        <p>Paste chords and lyrics below. The tool will automatically detect chord lines, lyric lines, and instrumental lines.</p>
         
         <div class="flex-container">
             <div class="flex-child">
@@ -36,79 +35,91 @@
     </div>
 
     <script>
+        function isChordLine(line) {
+            if (line.trim() === '') return false;
+            // הסר כותרות כמו [Verse]
+            const cleanLine = line.replace(/\[.*?\]/g, '').trim();
+            if (cleanLine === '') return true; 
+
+            const words = cleanLine.split(/\s+/);
+            const chordRegex = /^[A-G][#b]?(m|maj|min|dim|aug|sus|add)?[0-9]{0,2}(\/[A-G][#b]?)?$/;
+            const chordCount = words.filter(word => chordRegex.test(word)).length;
+            
+            return (chordCount / words.length) >= 0.8;
+        }
+
+        function parsePair(chordLine, lyricLine) {
+            const result = [];
+            let currentLyric = '';
+            let currentChord = '';
+            const maxLength = Math.max(chordLine.length, lyricLine.length);
+
+            for (let i = 0; i < maxLength; i++) {
+                const ch = chordLine[i] || ' ';
+                const ly = lyricLine[i] || ' ';
+
+                if (ch !== ' ') {
+                    currentChord += ch;
+                }
+
+                if (ly !== ' ') {
+                    currentLyric += ly;
+                }
+
+                const nextLyIsSpace = (lyricLine[i + 1] === ' ' || i + 1 >= lyricLine.length);
+                if (currentLyric && nextLyIsSpace) {
+                    const wordObj = { lyrics: currentLyric };
+                    if (currentChord.trim()) {
+                        wordObj.chords = currentChord.trim();
+                    }
+                    result.push(wordObj);
+                    currentLyric = '';
+                    currentChord = '';
+                }
+                 else if (currentChord.trim() && nextLyIsSpace && !currentLyric) {
+                    let floatingChord = currentChord.trim();
+                    if(result.length > 0){
+                       result[result.length-1].lyrics += ` ${floatingChord}`;
+                    }
+                    currentChord = '';
+                }
+            }
+            return result;
+        }
+
         function generateJson() {
             const text = document.getElementById('inputText').value;
             const lines = text.split('\n');
             const song = [];
-            let i = 0;
 
-            while (i < lines.length) {
-                const currentLine = lines[i].trimEnd();
-                // Skip empty lines or section headers like [Verse], [Chorus]
-                if (currentLine === '' || currentLine.startsWith('[')) {
-                    i++;
+            for (let i = 0; i < lines.length; i++) {
+                const line1 = lines[i];
+                if (line1.trim() === '' || line1.trim().startsWith('//')) {
+                    continue; 
+                }
+                 if (line1.trim().startsWith('[') && line1.trim().endsWith(']')) {
+                    const header = line1.trim();
+                     song.push([{lyrics: header}]);
                     continue;
                 }
 
-                const nextLine = (i + 1 < lines.length) ? lines[i + 1].trimEnd() : '';
-                
-                // Heuristic: If a line contains common chord characters and the next line doesn't, it's a chord line.
-                // This is not perfect but works for most cases.
-                const isChordLine = /^[A-G][#b]?(m|maj|dim|aug|sus)?[0-9]?(\/[A-G][#b]?)?/.test(currentLine.split(' ')[0]) && nextLine !== '' && !currentLine.startsWith('[') ;
-                
-                if (isChordLine) {
-                    const parsedLine = parseChordLine(currentLine, nextLine);
-                    if(parsedLine.length > 0) song.push(parsedLine);
-                    i += 2; // Move past both chord and lyric line
+                const line2 = (i + 1 < lines.length) ? lines[i + 1] : null;
+
+                if (isChordLine(line1)) {
+                    if (line2 && !isChordLine(line2) && line2.trim() !== '') {
+                        song.push(parsePair(line1, line2));
+                        i++; 
+                    } else {
+                        const chords = line1.trim().split(/\s+/).filter(c => c);
+                        song.push(chords.map(c => ({ lyrics: c, chords: c })));
+                    }
                 } else {
-                    // It's a line with only lyrics
-                    const words = currentLine.split(' ').filter(w => w !== '');
-                    const lyricLine = words.map(word => ({ lyrics: word }));
-                    if(lyricLine.length > 0) song.push(lyricLine);
-                    i++;
+                    const words = line1.trim().split(/\s+/).filter(w => w);
+                    song.push(words.map(w => ({ lyrics: w })));
                 }
             }
 
             document.getElementById('outputText').textContent = JSON.stringify(song, null, 4);
-        }
-
-        function parseChordLine(chordLine, lyricLine) {
-            const chords = [];
-            const regex = /(\S+)/g;
-            let match;
-            while ((match = regex.exec(chordLine)) !== null) {
-                chords.push({ chord: match[0], index: match.index });
-            }
-
-            if (chords.length === 0) {
-                 return lyricLine.split(' ').filter(w => w !== '').map(word => ({ lyrics: word }));
-            }
-            
-            const resultLine = [];
-            let lastIndex = 0;
-
-            chords.forEach((chordItem, i) => {
-                const nextChordIndex = (i + 1 < chords.length) ? chords[i + 1].index : lyricLine.length;
-                const lyricSegment = lyricLine.substring(lastIndex, nextChordIndex);
-                const words = lyricSegment.split(' ').filter(w => w !== '');
-                
-                words.forEach((word, wordIndex) => {
-                    if (wordIndex === 0) {
-                        resultLine.push({ lyrics: word, chords: chordItem.chord });
-                    } else {
-                        resultLine.push({ lyrics: word });
-                    }
-                });
-                lastIndex = nextChordIndex;
-            });
-            
-             // Add any remaining lyrics after the last chord
-            const remainingLyrics = lyricLine.substring(lastIndex);
-            const remainingWords = remainingLyrics.split(' ').filter(w => w.trim() !== '');
-            remainingWords.forEach(word => resultLine.push({ lyrics: word }));
-
-
-            return resultLine;
         }
         
         function copyToClipboard() {

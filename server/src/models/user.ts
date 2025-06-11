@@ -34,7 +34,14 @@ const userSchema: Schema<IUser> = new Schema({
         required: function (this: IUser) {
             return this.role === 'player';
         },
-        enum: ['guitar', 'piano', 'drums', 'bass', 'keyboard', 'saxophone', 'vocals', 'chello', 'violin']
+        enum: [
+            "Drums",
+            "Guitar",
+            "Bass",
+            "Saxophone",
+            "Keyboards",
+            "Vocals",
+        ]  
     },
 
     refreshTokens: {

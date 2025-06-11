@@ -6,7 +6,7 @@ import { Request, Response } from 'express';
 
 const router = express.Router();
 
-const songsListPath = path.join(__dirname, '..', 'data', 'songs.json');
+const songsListPath = path.join(process.cwd(), 'data', 'songs.json');
 const songsList = JSON.parse(fs.readFileSync(songsListPath, 'utf8'));
 
 
@@ -38,7 +38,10 @@ router.get('/:id', authMiddleware, (req, res) => {
         return; 
     }
 
-    const fullPath = path.join(__dirname, '..', song.filePath.replace('/data/', 'data/'));
+    const relativePath = song.filePath.startsWith('/') ? song.filePath.substring(1) : song.filePath;
+    const fullPath = path.join(process.cwd(), relativePath);  
+    console.log(`Attempting to read song file from: ${fullPath}`); 
+
     
     fs.readFile(fullPath, 'utf8', (err, data) => {
         if (err) {
