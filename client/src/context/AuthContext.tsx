@@ -6,6 +6,7 @@ interface AuthState {
   role: "admin" | "player" | null;
   instrument: string | null;
   isLoggedIn: boolean;
+  name: string | null;
 }
 
 interface AuthContextType extends AuthState {
@@ -14,6 +15,7 @@ interface AuthContextType extends AuthState {
 }
 
 const defaultState: AuthState = {
+  name: null,
   accessToken: null,
   refreshToken: null,
   role: null,
@@ -36,22 +38,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
-    const refreshToken = localStorage.getItem("refreshToken");
-    const role = localStorage.getItem("role") as "admin" | "player" | null;
-    const instrument = localStorage.getItem("instrument");
-
-    if (accessToken && refreshToken && role && instrument) {
+    const name = localStorage.getItem("name");
+    if (accessToken && name) {
       setAuth({
+        name,
         accessToken,
-        refreshToken,
-        role,
-        instrument,
+        refreshToken: localStorage.getItem("refreshToken"),
+        role: localStorage.getItem("role") as "admin" | "player" | null,
+        instrument: localStorage.getItem("instrument"),
         isLoggedIn: true,
       });
     }
   }, []);
 
   const login = (data: Partial<AuthState>) => {
+    if (data.name) localStorage.setItem("name", data.name);
     if (data.accessToken) localStorage.setItem("accessToken", data.accessToken);
     if (data.refreshToken)
       localStorage.setItem("refreshToken", data.refreshToken);
@@ -59,16 +60,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     if (data.instrument) localStorage.setItem("instrument", data.instrument);
 
     setAuth({
+      name: data.name || null,
       accessToken: data.accessToken || null,
       refreshToken: data.refreshToken || null,
       role: data.role || null,
       instrument: data.instrument || null,
-      isLoggedIn: true,
+      isLoggedIn: !!data.accessToken,
     });
   };
 
   const logout = () => {
-    localStorage.clear();
+    localStorage.removeItem("name");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("role");
+    localStorage.removeItem("instrument");
+
     setAuth(defaultState);
   };
 

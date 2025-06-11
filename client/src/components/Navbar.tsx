@@ -2,7 +2,7 @@ import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, logout, name } = useAuth();
 
   const activeLinkStyle = "bg-orange-600 text-white";
   const inactiveLinkStyle =
@@ -12,14 +12,20 @@ const Navbar = () => {
     <nav className="bg-white shadow-lg sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">
+          <div className="flex items-center space-x-4">
             <Link
               to="/"
               className="text-2xl font-bold text-blue-900 hover:text-orange-600 transition-colors duration-300"
             >
               JaMoveo
             </Link>
+            {isLoggedIn && name && (
+              <span className="text-gray-800 font-medium text-sm hidden sm:inline">
+                Hello, {name}
+              </span>
+            )}
           </div>
+
           <div className="flex items-center space-x-2 md:space-x-4">
             {isLoggedIn ? (
               <button
