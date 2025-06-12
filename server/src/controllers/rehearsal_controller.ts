@@ -109,7 +109,7 @@ const getSessionById = async (req: Request, res: Response): Promise<void> => {
     res.status(500).json({ message: "Error fetching session details", error: err });
   }
 };
-
+/*
 const quitSession = async (req: Request, res: Response): Promise<void> => {
   try {
     const sessionId = req.params.id;
@@ -136,6 +136,52 @@ const quitSession = async (req: Request, res: Response): Promise<void> => {
     session.isActive = false;
     await session.save();
     req.app.get('io')?.to(sessionId).emit('session-ended');
+    res.status(200).json({ message: "Session ended successfully.", session });
+  } catch (error) {
+    console.error("quitSession error:", error);
+    res.status(500).json({ message: "Failed to end session.", error });
+  }
+};
+*/
+
+const quitSession = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const sessionId = req.params.id;
+    console.log(`[Server] Log 1: Attempting to quit session: ${sessionId}`);
+
+    const userId = req.user?._id;
+    const userRole = req.user?.role;
+
+    if (!userId || userRole !== 'admin') {
+      res.status(403).json({ message: "Only admins can quit sessions." });
+      return;
+    }
+
+    const session = await RehearsalSession.findById(sessionId);
+
+    if (!session || !session.isActive) {
+      console.log(`[Server] Log 2: Session not found or inactive: ${sessionId}`);
+      res.status(404).json({ message: "Active session not found." });
+      return;
+    }
+
+    if (session.adminId.toString() !== userId.toString()) {
+      res.status(403).json({ message: "You are not the admin of this session." });
+      return;
+    }
+
+    session.isActive = false;
+    await session.save();
+    console.log(`[Server] Log 3: Session ${sessionId} marked as inactive in DB.`);
+
+    const io = req.app.get('io');
+    if (io) {
+      console.log(`[Server] Log 4: Emitting 'session-ended' to room: ${sessionId}`);
+      io.to(sessionId).emit('session-ended');
+    } else {
+      console.log(`[Server] Log 5: CRITICAL ERROR! io object not found on req.app!`);
+    }
+
     res.status(200).json({ message: "Session ended successfully.", session });
   } catch (error) {
     console.error("quitSession error:", error);
