@@ -1,15 +1,21 @@
-import mongoose, {Schema, Document, Model} from "mongoose";
+import mongoose, {Schema, Document, Model, Types} from "mongoose";
+import { Instrument } from "../types/instrument";
 
 export interface IUser extends Document {
+    _id: Types.ObjectId;
     name: string;
     email: string;
     password: string;
-    instrument: string;
+    instrument: Instrument;
     role: 'player' | 'admin';
-    refreshTokens?: string[];
+    refreshTokens?: string;
 }
 
 const userSchema: Schema<IUser> = new Schema({
+    _id: {
+        type: Schema.Types.ObjectId,
+        default: () => new Types.ObjectId()
+    },
     name: {
         type: String,
         required: true
@@ -34,19 +40,12 @@ const userSchema: Schema<IUser> = new Schema({
         required: function (this: IUser) {
             return this.role === 'player';
         },
-        enum: [
-            "Drums",
-            "Guitar",
-            "Bass",
-            "Saxophone",
-            "Keyboards",
-            "Vocals",
-        ]  
+        enum: Object.values(Instrument),
     },
 
     refreshTokens: {
-        type: [String], 
-        default: [],
+        type: String, 
+        default: null,
     }
 },{
     timestamps: true

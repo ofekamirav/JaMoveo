@@ -2,15 +2,22 @@ import { NextFunction, Request, Response } from 'express';
 import User from "../models/user"; 
 import bcrypt from 'bcryptjs';
 import jwt, { JwtPayload, SignOptions } from 'jsonwebtoken';
+import { Types } from 'mongoose';
+import { Instrument } from '../types/instrument';
 
 declare global {
     namespace Express {
         interface Request {
-            user?: any; 
+            user?: {
+                _id: Types.ObjectId;
+                name: string;
+                role: 'admin' | 'player';
+                instrument: Instrument;
+                refreshTokens?: string;
+            };
         }
     }
 }
-
 interface CustomJwtPayload extends JwtPayload {
     _id: string;
 }
@@ -64,8 +71,8 @@ const register = async (req: Request, res: Response): Promise<void> => {
 
         const user = await User.create({ name, email, password: hashedPassword, instrument, role });
 
-        const tokens = generateTokens((user._id as string | { toString(): string }).toString());
-        user.refreshTokens = [tokens.refreshToken];
+        const tokens = generateTokens(user._id.toString());
+        user.refreshTokens = tokens.refreshToken;
         await user.save();
 
         res.status(201).json({
@@ -108,9 +115,9 @@ const login = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const tokens = generateTokens((user._id as string | { toString(): string }).toString());
+        const tokens = generateTokens(user._id.toString());
+        user.refreshTokens = user.refreshTokens;
 
-        user.refreshTokens = [...(user.refreshTokens || []), tokens.refreshToken];
         await user.save();
 
         res.status(200).json({
@@ -139,7 +146,7 @@ const logout = async (req: Request, res: Response): Promise<void> => {
     try {
         const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!) as CustomJwtPayload;
         
-        await User.updateOne({ _id: decoded._id }, { $pull: { refreshTokens: refreshToken } });
+        await User.updateOne({ _id: decoded._id, refreshToken: refreshToken }, { refreshToken: null });
         
         res.status(200).json({ message: 'Logged out successfully.' });
 
@@ -163,11 +170,12 @@ const refresh = async (req: Request, res: Response): Promise<void> => {
             res.status(403).json({ message: 'Forbidden: Invalid or revoked refresh token. Please log in again.' });
             return;
         }
-
-        const newTokens = generateTokens((user._id as string | { toString(): string }).toString());
-        
-        user.refreshTokens = user.refreshTokens.filter(rt => rt !== refreshToken);
-        user.refreshTokens.push(newTokens.refreshToken);
+        const tokens = generateTokens(user._id.toString());
+        const newTokens = {
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
+        };
+        user.refreshTokens = newTokens.refreshToken
         await user.save();
 
         res.status(200).json({
@@ -180,28 +188,40 @@ const refresh = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-export const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
+export const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const authHeader = req.headers['authorization'];
-    
+
     if (typeof authHeader !== 'string' || !authHeader.startsWith('Bearer ')) {
         console.error("authMiddleware FAILED: Header is missing or malformed.", authHeader);
         res.status(401).json({ message: 'Not authorized, token is missing or malformed.' });
         return;
     }
 
-    const token = authHeader.substring(7); 
+    const token = authHeader.substring(7);
 
     try {
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as CustomJwtPayload;
-        
+
         if (!decoded || !decoded._id) {
             console.error("authMiddleware FAILED: Token payload is invalid.", decoded);
             res.status(401).json({ message: 'Not authorized, token is invalid.' });
             return;
         }
 
-        req.user = { _id: decoded._id }; 
-        console.log(`authMiddleware SUCCESS: User ${decoded._id} authorized.`);
+        const user = await User.findById(decoded._id).select("_id name role instrument");
+        if (!user) {
+            res.status(401).json({ message: 'User not found.' });
+            return;
+        }
+
+        req.user = {
+            _id: user._id,
+            name: user.name,
+            role: user.role,
+            instrument: user.instrument,
+        };
+
+        console.log(`authMiddleware SUCCESS: User ${user._id} (${user.role}) authorized.`);
         next();
     } catch (error) {
         console.error("authMiddleware FAILED: Token verification failed.", error);

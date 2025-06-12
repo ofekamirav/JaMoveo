@@ -1,52 +1,83 @@
 import { Request, Response } from "express";
 import RehearsalSession from "../models/rehearsal";
+import User from "../models/user";
+import { Instrument } from "../types/instrument";
+import { Types } from "mongoose";
 
 const createSession = async (req: Request, res: Response): Promise<void> => {
   try {
     const { currentSongId } = req.body;
-    const adminId = req.user?._id; 
+    const adminId = req.user?._id;
 
     if (!adminId) {
-        res.status(401).json({ message: "User not properly authenticated." });
-        return;
+      res.status(401).json({ message: "User not properly authenticated." });
+      return;
     }
-    
-    await RehearsalSession.updateMany({ adminId, isActive: true }, { isActive: false });
+
+    const admin = await User.findById(adminId);
+    if (!admin) {
+      res.status(404).json({ message: "Admin user not found." });
+      return;
+    }
+
+    // Check if there's an active session and end it
+    await RehearsalSession.updateMany({isActive: true }, { isActive: false });
 
     const session = await RehearsalSession.create({
       adminId,
       currentSongId,
-      participants: [adminId],
+      participants: [
+        {
+          userId: admin._id,
+          name: admin.name,
+          instrument: admin.instrument as Instrument
+        }
+      ],
       isActive: true
     });
+    req.app.get('io')?.emit('session-created', session._id);
     res.status(201).json(session);
   } catch (err) {
     res.status(500).json({ message: "Failed to create session", error: err });
   }
 };
 
-const joinSession = async (req: Request, res: Response) : Promise<void> => {
+const joinSession = async (req: Request, res: Response): Promise<void> => {
   try {
     const sessionId = req.params.id;
     const userId = req.user?._id;
+
     const session = await RehearsalSession.findById(sessionId);
     if (!session || !session.isActive) {
-        res.status(404).json({ message: "Session not found or inactive" });
-        return;
+      res.status(404).json({ message: "Session not found or inactive" });
+      return;
     }
 
-    if (!session.participants.includes(userId)) {
-      session.participants.push(userId);
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+   const alreadyJoined = session.participants.some(
+    (p: any) => (p.userId ? p.userId.toString() : p.toString()) === (userId as Types.ObjectId).toString()
+  );
+
+    if (!alreadyJoined) {
+      session.participants.push({
+        userId: user._id,
+        name: user.name,
+        instrument: user.instrument as Instrument
+      });
       await session.save();
     }
 
     res.json(session);
   } catch (err) {
+    console.error("Join Session Error:", err);
     res.status(500).json({ message: "Failed to join session", error: err });
   }
 };
-
-
 
 const getActiveSession = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -56,59 +87,14 @@ const getActiveSession = async (req: Request, res: Response): Promise<void> => {
       res.status(404).json({ message: "No active session found" });
       return;
     }
-  
+
     res.json(session);
   } catch (err) {
-    console.error("Error fetching active session:", err); 
+    console.error("Error fetching active session:", err);
     res.status(500).json({ message: "Error fetching session", error: err });
   }
 };
 
-const endSession = async (req: Request, res: Response) => {
-  try {
-    const sessionId = req.params.id;
-    const session = await RehearsalSession.findByIdAndUpdate(
-      sessionId,
-      { isActive: false },
-      { new: true }
-    );
-    res.json(session);
-  } catch (err) {
-    res.status(500).json({ message: "Failed to end session", error: err });
-  }
-};
-
-const updateSongInSession = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const sessionId = req.params.id;
-    const userId = req.user?._id;
-    const { songId } = req.body;  
-
-    if (!songId) {
-      res.status(400).json({ message: "Song ID is required" });
-      return;
-    }
-
-    const session = await RehearsalSession.findById(sessionId);
-    if (!session || !session.isActive) {
-      res.status(404).json({ message: "Session not found or inactive" });
-      return;
-    }
-
-    if (session.adminId.toString() !== userId) {
-      res.status(403).json({ message: "Unauthorized to update song" });
-      return;
-    }
-
-    session.currentSongId = songId; 
-    await session.save();
-
-
-    res.json(session);
-  } catch (err) {
-    res.status(500).json({ message: "Failed to update song in session", error: err });
-  }
-};
 
 const getSessionById = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -124,12 +110,45 @@ const getSessionById = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+const quitSession = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const sessionId = req.params.id;
+    const userId = req.user?._id;
+    const userRole = req.user?.role;
+
+    if (!userId || userRole !== 'admin') {
+      res.status(403).json({ message: "Only admins can quit sessions." });
+      return;
+    }
+
+    const session = await RehearsalSession.findById(sessionId);
+
+    if (!session || !session.isActive) {
+      res.status(404).json({ message: "Active session not found." });
+      return;
+    }
+
+    if (session.adminId.toString() !== userId.toString()) {
+      res.status(403).json({ message: "You are not the admin of this session." });
+      return;
+    }
+
+    session.isActive = false;
+    await session.save();
+    req.app.get('io')?.to(sessionId).emit('session-ended');
+    res.status(200).json({ message: "Session ended successfully.", session });
+  } catch (error) {
+    console.error("quitSession error:", error);
+    res.status(500).json({ message: "Failed to end session.", error });
+  }
+};
+
+
 const RehearsalController = {
   createSession,
   joinSession,
   getActiveSession,
-  endSession,
-  updateSongInSession,
+  quitSession,
   getSessionById
 };
 
