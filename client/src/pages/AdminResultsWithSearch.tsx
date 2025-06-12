@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../services/AuthContext";
 
@@ -13,14 +13,39 @@ const AdminResultsWithSearch: React.FC = () => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SongResult[]>([]);
   const [error, setError] = useState("");
-  const location = useLocation();
-  const navigate = useNavigate();
   const [isCreatingSession, setIsCreatingSession] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
+  const location = useLocation();
+  const navigate = useNavigate();
   const { accessToken } = useAuth();
 
   const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
+
+  const fetchResults = useCallback(
+    async (searchQuery: string) => {
+      setLoading(true);
+      setHasSearched(true);
+      setError("");
+      try {
+        if (!accessToken) throw new Error("User is not authenticated");
+
+        const res = await fetch(`${API_URL}/songs/search?q=${searchQuery}`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Failed to load results");
+        setResults(data);
+      } catch (err: any) {
+        setError(err.message);
+        setResults([]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [accessToken]
+  );
 
   useEffect(() => {
     const initialQuery = new URLSearchParams(location.search).get("q") || "";
@@ -31,30 +56,7 @@ const AdminResultsWithSearch: React.FC = () => {
       setResults([]);
       setHasSearched(false);
     }
-  }, [location.search]);
-
-  const fetchResults = async (searchQuery: string) => {
-    setLoading(true);
-    setHasSearched(true);
-    setError("");
-    try {
-      if (!accessToken) throw new Error("User is not authenticated");
-
-      const res = await fetch(`${API_URL}/songs/search?q=${searchQuery}`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to load results");
-      setResults(data);
-      setError("");
-    } catch (err: any) {
-      setError(err.message);
-      setResults([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [location.search, fetchResults]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,7 +76,6 @@ const AdminResultsWithSearch: React.FC = () => {
       if (!accessToken) {
         throw new Error("Authentication token not found. Please log in again.");
       }
-
       const response = await fetch(`${API_URL}/rehearsals`, {
         method: "POST",
         headers: {
@@ -83,7 +84,6 @@ const AdminResultsWithSearch: React.FC = () => {
         },
         body: JSON.stringify({ currentSongId: songId }),
       });
-
       const session = await response.json();
       if (!response.ok) {
         throw new Error(session.message || "Failed to create session.");
