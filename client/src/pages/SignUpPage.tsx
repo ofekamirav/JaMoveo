@@ -1,19 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../services/AuthContext";
+import { getInstrumentNames } from "../types/instrument";
+import { Instrument } from "../types/instrument";
+
+const instruments = getInstrumentNames();
 
 interface SignupPageProps {
   isAdmin?: boolean;
 }
-
-const instruments = [
-  "Drums",
-  "Guitar",
-  "Bass",
-  "Saxophone",
-  "Keyboards",
-  "Vocals",
-];
 
 const SignupPage: React.FC<SignupPageProps> = ({ isAdmin = false }) => {
   const [name, setName] = useState("");
@@ -32,7 +27,7 @@ const SignupPage: React.FC<SignupPageProps> = ({ isAdmin = false }) => {
     setError("");
     setSuccessMessage("");
 
-    if (!name || !email || !password || (!isAdmin && !instrument)) {
+    if (!name || !email || !password || !instrument) {
       setError("You must fill in all required fields.");
       return;
     }
@@ -40,9 +35,7 @@ const SignupPage: React.FC<SignupPageProps> = ({ isAdmin = false }) => {
     const url = `${API_BASE_URL}/auth/${
       isAdmin ? "admin/register" : "register"
     }`;
-    const body = isAdmin
-      ? { name, email, password }
-      : { name, email, password, instrument };
+    const body = { name, email, password, instrument };
 
     try {
       const response = await fetch(url, {
@@ -64,6 +57,8 @@ const SignupPage: React.FC<SignupPageProps> = ({ isAdmin = false }) => {
         refreshToken: data.refreshToken,
         role: data.role,
         instrument: data.instrument,
+        name: data.name,
+        _id: data._id,
       });
       navigate(isAdmin ? "/admin" : "/live");
     } catch (err: any) {
@@ -126,29 +121,27 @@ const SignupPage: React.FC<SignupPageProps> = ({ isAdmin = false }) => {
               required
             />
           </div>
-          {!isAdmin && (
-            <div>
-              <label
-                htmlFor="instrument"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Instrument
-              </label>
-              <select
-                id="instrument"
-                value={instrument}
-                onChange={(e) => setInstrument(e.target.value)}
-                className="mt-1 block w-full pl-3 pr-10 py-2 bg-white border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500 sm:text-sm transition"
-                required
-              >
-                {instruments.map((inst) => (
-                  <option key={inst} value={inst}>
-                    {inst}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+          <div>
+            <label
+              htmlFor="instrument"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Instrument
+            </label>
+            <select
+              id="instrument"
+              value={instrument}
+              onChange={(e) => setInstrument(e.target.value as Instrument)}
+              className="mt-1 block w-full pl-3 pr-10 py-2 bg-white border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500 sm:text-sm transition"
+              required
+            >
+              {instruments.map((inst) => (
+                <option key={inst} value={inst}>
+                  {inst}
+                </option>
+              ))}
+            </select>
+          </div>
           {error && <p className="text-red-500 text-sm text-center">{error}</p>}
           {successMessage && (
             <p className="text-green-500 text-sm text-center">

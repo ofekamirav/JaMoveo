@@ -5,7 +5,7 @@ export const useAutoScroll = (scrollSpeed: number = 50) => {
   const scrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const startScrolling = useCallback(() => {
-    if (scrollIntervalRef.current) return; 
+    if (scrollIntervalRef.current) return;
 
     scrollIntervalRef.current = setInterval(() => {
       window.scrollBy(0, 1);
@@ -35,5 +35,5 @@ export const useAutoScroll = (scrollSpeed: number = 50) => {
     };
   }, [stopScrolling]);
 
-  return { isScrolling, toggleScrolling };
+  return { isScrolling, toggleScrolling, startScrolling, stopScrolling };
 };

@@ -1,18 +1,31 @@
-// socket.ts
 import { Server } from "socket.io";
 
 export function setupSocket(io: Server) {
   io.on('connection', (socket) => {
+    console.log(`Socket connected: ${socket.id}`);
+
     socket.on('join-session', (sessionId) => {
-      socket.join(sessionId);
+      if (sessionId) {
+        socket.join(sessionId);
+        console.log(`Socket ${socket.id} joined session room: ${sessionId}`);
+      }
     });
 
-    socket.on('change-song', ({ sessionId, songId }) => {
-      io.to(sessionId).emit('song-changed', songId);
+    socket.on('leave-session', (sessionId) => {
+      if (sessionId) {
+        socket.leave(sessionId);
+        console.log(`Socket ${socket.id} left session room: ${sessionId}`);
+      }
+    });
+
+     socket.on('toggle-scroll', (data: { sessionId: string; shouldScroll: boolean }) => {
+      if (data.sessionId) {
+        socket.to(data.sessionId).emit('scroll-state-changed', { shouldScroll: data.shouldScroll });
+      }
     });
 
     socket.on('disconnect', () => {
-      // Optional: handle disconnects
+      console.log(`Socket disconnected: ${socket.id}`);
     });
   });
 }

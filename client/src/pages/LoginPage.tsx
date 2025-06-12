@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../services/AuthContext";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -34,7 +34,7 @@ const LoginPage: React.FC = () => {
         role: data.role,
         instrument: data.instrument,
         name: data.name,
-        userId: data._id,
+        _id: data._id,
       });
 
       if (data.role === "admin") {
@@ -45,9 +45,16 @@ const LoginPage: React.FC = () => {
             Authorization: `Bearer ${data.accessToken}`,
           },
         });
-
         if (res.ok) {
           const session = await res.json();
+
+          await fetch(`${API_BASE_URL}/rehearsals/${session._id}/join`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${data.accessToken}`,
+            },
+          });
           navigate(`/live/${session._id}`);
         } else {
           navigate("/live/no-session");

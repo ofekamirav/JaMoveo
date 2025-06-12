@@ -8,8 +8,7 @@ router.post("/", authMiddleware, RehearsalController.createSession);
 router.post("/:id/join", authMiddleware, RehearsalController.joinSession);
 router.get("/active", authMiddleware, RehearsalController.getActiveSession);
 router.get("/:id", authMiddleware, RehearsalController.getSessionById);
-router.post("/:id/end", authMiddleware, RehearsalController.endSession);
-router.patch("/:id/song", authMiddleware, RehearsalController.updateSongInSession);
+router.post('/quit/:id', authMiddleware, RehearsalController.quitSession); 
 
 
 export default router;
