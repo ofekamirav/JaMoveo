@@ -27,6 +27,23 @@ const LivePage: React.FC = () => {
 
   const isAdmin = user?.role === "admin";
 
+  const loadSong = useCallback(
+    async (songId: string) => {
+      if (!accessToken) return;
+      setError("");
+      try {
+        const res = await fetch(`${API_URL}/songs/${songId}`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        if (!res.ok) throw new Error("Failed to fetch song data");
+        setCurrentSong(await res.json());
+      } catch (err: any) {
+        setError(err.message || "Could not load song.");
+      }
+    },
+    [accessToken]
+  );
+
   useEffect(() => {
     if (!isLoading && !accessToken) navigate("/login");
   }, [isLoading, accessToken, navigate]);
@@ -82,7 +99,7 @@ const LivePage: React.FC = () => {
         socket.off("session-ended", handleSessionEnded);
       };
     }
-  }, [user, sessionId, accessToken, navigate, handleSessionEnded]);
+  }, [user, sessionId, accessToken, navigate, handleSessionEnded, loadSong]);
 
   useEffect(() => {
     const handleScrollState = (data: { shouldScroll: boolean }) => {
@@ -101,20 +118,6 @@ const LivePage: React.FC = () => {
   const handleToggleScrollForAdmin = () => {
     toggleScrolling();
     socket.emit("toggle-scroll", { sessionId, shouldScroll: !isScrolling });
-  };
-
-  const loadSong = async (songId: string) => {
-    if (!accessToken) return;
-    setError("");
-    try {
-      const res = await fetch(`${API_URL}/songs/${songId}`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-      if (!res.ok) throw new Error("Failed to fetch song data");
-      setCurrentSong(await res.json());
-    } catch (err: any) {
-      setError(err.message || "Could not load song.");
-    }
   };
 
   const handleQuitSession = async () => {
