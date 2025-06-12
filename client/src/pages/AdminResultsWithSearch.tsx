@@ -44,7 +44,7 @@ const AdminResultsWithSearch: React.FC = () => {
         setLoading(false);
       }
     },
-    [accessToken]
+    [API_URL,accessToken]
   );
 
   useEffect(() => {
