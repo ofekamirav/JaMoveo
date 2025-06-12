@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../services/AuthContext";
 
 interface SongResult {
   id: string;
   title: string;
   artist: string;
-  filePath: string;
 }
 
 const AdminResultsWithSearch: React.FC = () => {
@@ -16,6 +16,8 @@ const AdminResultsWithSearch: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isCreatingSession, setIsCreatingSession] = useState(false);
+
+  const { accessToken } = useAuth();
 
   const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
 
@@ -30,10 +32,12 @@ const AdminResultsWithSearch: React.FC = () => {
   const fetchResults = async (searchQuery: string) => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("accessToken");
+      if (!accessToken) throw new Error("User is not authenticated");
+
       const res = await fetch(`${API_URL}/songs/search?q=${searchQuery}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${accessToken}` },
       });
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to load results");
       setResults(data);
@@ -55,35 +59,23 @@ const AdminResultsWithSearch: React.FC = () => {
     setIsCreatingSession(true);
     setError("");
     try {
-      const token = localStorage.getItem("accessToken");
-
-      console.log("--- Preparing to create session ---");
-      console.log("Song ID to send:", songId);
-      console.log("Authorization Token to send:", token);
-
-      if (!token) {
-        setError("Authentication token not found. Please log in again.");
-        setIsCreatingSession(false);
-        return;
+      if (!accessToken) {
+        throw new Error("Authentication token not found. Please log in again.");
       }
 
       const response = await fetch(`${API_URL}/rehearsals`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify({ currentSongId: songId }),
       });
 
       const session = await response.json();
-
-      console.log("Server response:", session);
-
       if (!response.ok) {
         throw new Error(session.message || "Failed to create session.");
       }
-
       navigate(`/live/${session._id}`);
     } catch (err: any) {
       setError(err.message);
@@ -91,6 +83,9 @@ const AdminResultsWithSearch: React.FC = () => {
       setIsCreatingSession(false);
     }
   };
+
+  const showNoResultsMessage = !loading && query && results.length === 0;
+
   return (
     <div className="max-w-4xl mx-auto mt-12 px-4">
       <h2 className="text-2xl font-bold text-blue-900 mb-4">
@@ -108,11 +103,13 @@ const AdminResultsWithSearch: React.FC = () => {
 
       {error && <p className="text-red-500">{error}</p>}
 
-      {loading ? (
+      {loading && (
         <div className="text-white text-center mt-8 animate-pulse">
           Loading results...
         </div>
-      ) : results.length >= 2 ? (
+      )}
+
+      {showNoResultsMessage ? (
         <div className="text-gray-400 text-center mt-8">
           No songs found for "<span className="italic">{query}</span>".
           <br />

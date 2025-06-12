@@ -1,145 +1,155 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import io from "socket.io-client";
-import { useAuth } from "../context/AuthContext";
+import { socket } from "../services/SocketService";
+import { useAuth } from "../services/AuthContext";
 import { useAutoScroll } from "../hooks/useAutoScroll";
 import SongDisplay from "../components/SongDisplay";
+import PlayerWaitingPage from "./PlayerWaitingPage";
+import { getInstrumentIcon } from "../types/instrument";
 
 interface SongData {
-  id: string;
+  _id: string;
   title: string;
   artist: string;
   content: { lyrics: string; chords?: string }[][];
 }
-interface SongMeta {
-  id: string;
-  title: string;
-  artist: string;
-}
 
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
-const socket = io(API_URL, { transports: ["websocket"] });
 
 const LivePage: React.FC = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
   const navigate = useNavigate();
-  const { userId, instrument, accessToken } = useAuth();
-  const { isScrolling, toggleScrolling } = useAutoScroll(50);
-
+  const { user, accessToken, isLoading } = useAuth();
+  const { isScrolling, toggleScrolling, startScrolling, stopScrolling } =
+    useAutoScroll(50);
   const [currentSong, setCurrentSong] = useState<SongData | null>(null);
-  const [allSongs, setAllSongs] = useState<SongMeta[]>([]);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [error, setError] = useState("");
 
+  const isAdmin = user?.role === "admin";
+
   useEffect(() => {
-    if (!accessToken) {
-      navigate("/login");
-      return;
+    if (!isLoading && !accessToken) navigate("/login");
+  }, [isLoading, accessToken, navigate]);
+
+  const handleSessionEnded = useCallback(() => {
+    if (isAdmin) {
+      navigate("/admin");
+    } else {
+      navigate("/live/no-session");
     }
+  }, [isAdmin, navigate]);
 
-    if (sessionId) {
-      fetch(`${API_URL}/rehearsals/${sessionId}`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      })
-        .then((res) => {
-          if (!res.ok) throw new Error("Could not fetch session info");
-          return res.json();
-        })
-        .then((session) => {
-          setIsAdmin(session.adminId === userId);
-          if (session.currentSongId)
-            loadSong(session.currentSongId, accessToken);
-        })
-        .catch(() => navigate("/live/no-session"));
+  useEffect(() => {
+    if (accessToken && sessionId && user) {
+      const joinAndFetchSession = async () => {
+        try {
+          await fetch(`${API_URL}/rehearsals/${sessionId}/join`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
 
-      fetch(`${API_URL}/songs`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      })
-        .then((res) => res.json())
-        .then(setAllSongs)
-        .catch(() => setError("Could not fetch song list."));
+          socket.emit("join-session", sessionId);
 
-      socket.emit("join-session", sessionId);
-      socket.on("song-changed", (songId: string) =>
-        loadSong(songId, accessToken)
-      );
-      socket.on("session-ended", () => {
-        if (!isAdmin) navigate("/live/no-session");
-      });
+          const res = await fetch(`${API_URL}/rehearsals/${sessionId}`, {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          });
+
+          if (!res.ok) {
+            throw new Error("Session not found or inactive after joining");
+          }
+
+          const session = await res.json();
+          if (session.currentSongId) {
+            loadSong(session.currentSongId);
+          }
+        } catch (err) {
+          console.error("Failed to join or fetch session:", err);
+          if (window.location.pathname.includes("/live/")) {
+            navigate("/live/no-session");
+          }
+        }
+      };
+
+      joinAndFetchSession();
+
+      socket.on("session-ended", handleSessionEnded);
 
       return () => {
-        socket.off("song-changed");
-        socket.off("session-ended");
+        socket.emit("leave-session", sessionId);
+        socket.off("session-ended", handleSessionEnded);
       };
     }
-  }, [sessionId, navigate, accessToken, userId, isAdmin]);
+  }, [user, sessionId, accessToken, navigate, handleSessionEnded]);
 
-  const loadSong = async (songId: string, token: string | null) => {
-    if (!token) return;
-    try {
-      const res = await fetch(`${API_URL}/songs/${songId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error("Failed to fetch song");
-      setCurrentSong(await res.json());
-    } catch {
-      setError("Could not load the selected song.");
-    }
+  useEffect(() => {
+    const handleScrollState = (data: { shouldScroll: boolean }) => {
+      if (data.shouldScroll) {
+        startScrolling();
+      } else {
+        stopScrolling();
+      }
+    };
+    socket.on("scroll-state-changed", handleScrollState);
+    return () => {
+      socket.off("scroll-state-changed", handleScrollState);
+    };
+  }, [startScrolling, stopScrolling]);
+
+  const handleToggleScrollForAdmin = () => {
+    toggleScrolling();
+    socket.emit("toggle-scroll", { sessionId, shouldScroll: !isScrolling });
   };
 
-  const handleChangeSong = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newSongId = e.target.value;
-    if (!newSongId) return;
-    await fetch(`${API_URL}/rehearsals/${sessionId}/song`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify({ songId: newSongId }),
-    });
-    socket.emit("change-song", { sessionId, songId: newSongId });
-    loadSong(newSongId, accessToken);
+  const loadSong = async (songId: string) => {
+    if (!accessToken) return;
+    setError("");
+    try {
+      const res = await fetch(`${API_URL}/songs/${songId}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      if (!res.ok) throw new Error("Failed to fetch song data");
+      setCurrentSong(await res.json());
+    } catch (err: any) {
+      setError(err.message || "Could not load song.");
+    }
   };
 
   const handleQuitSession = async () => {
-    if (!sessionId) return;
+    if (!accessToken || !sessionId) return;
     try {
-      await fetch(`${API_URL}/rehearsals/${sessionId}/end`, {
+      const response = await fetch(`${API_URL}/rehearsals/quit/${sessionId}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${accessToken}` },
       });
-      socket.emit("end-session", sessionId);
-      navigate("/admin");
-    } catch {
-      setError("Failed to end session.");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to end session.");
+      }
+    } catch (err: any) {
+      setError(err.message || "Could not end session. Please try again.");
     }
   };
 
-  return (
-    <div className="max-w-5xl mx-auto px-4 py-10 text-white">
-      <h1 className="text-4xl font-bold mb-8">Live Rehearsal</h1>
+  if (isLoading) {
+    return <div className="text-center mt-40">Initializing...</div>;
+  }
 
-      {isAdmin && (
-        <div className="mb-6 bg-gray-700 p-4 rounded-lg">
-          <label className="block mb-2 text-lg">Change Song:</label>
-          <select
-            onChange={handleChangeSong}
-            value={currentSong?.id || ""}
-            className="w-full p-3 text-black rounded-md text-lg"
-          >
-            <option value="">-- Select a Song --</option>
-            {allSongs.map((song) => (
-              <option key={song.id} value={song.id}>
-                {song.title} — {song.artist}
-              </option>
-            ))}
-          </select>
+  return (
+    <div className="bg-white max-w-5xl mx-auto px-4 py-10 text-gray-800">
+      {user?.instrument && (
+        <div className="fixed top-20 right-5 bg-white/80 backdrop-blur-md text-gray-800 px-4 py-2 rounded-full shadow-lg flex items-center space-x-2 border border-gray-200 z-40">
+          <span>{getInstrumentIcon(user.instrument) || "🎶"}</span>
+          <span className="font-semibold capitalize">{user.instrument}</span>
         </div>
       )}
 
       {error && (
-        <p className="text-red-500 text-center mb-4 text-lg">{error}</p>
+        <p className="text-red-500 bg-red-100 p-3 rounded-md text-center mb-4">
+          {error}
+        </p>
       )}
 
       {currentSong ? (
@@ -147,29 +157,26 @@ const LivePage: React.FC = () => {
           title={currentSong.title}
           artist={currentSong.artist}
           content={currentSong.content}
-          instrument={instrument}
+          instrument={user?.instrument || null}
         />
       ) : (
-        <div className="text-center mt-20">
-          <p className="text-2xl text-gray-400 animate-pulse">
-            Waiting for a song to be selected...
-          </p>
-        </div>
+        <PlayerWaitingPage forAdmin={isAdmin} />
       )}
-
-      <button
-        onClick={toggleScrolling}
-        className="fixed bottom-5 right-5 bg-orange-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg hover:bg-orange-700 transition-transform hover:scale-110 text-2xl z-50"
-      >
-        {isScrolling ? "❚❚" : "▶"}
-      </button>
 
       {isAdmin && (
         <button
-          onClick={handleQuitSession}
-          className="fixed bottom-5 left-5 bg-red-700 text-white rounded-lg px-6 py-3 flex items-center justify-center shadow-lg hover:bg-red-800 transition-transform hover:scale-110 font-bold z-50"
+          onClick={handleToggleScrollForAdmin}
+          className="fixed bottom-5 right-5 bg-orange-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg hover:bg-orange-700 transition-transform hover:scale-110 text-2xl z-50"
         >
-          Quit
+          {isScrolling ? "❚❚" : "►"}
+        </button>
+      )}
+      {isAdmin && (
+        <button
+          onClick={handleQuitSession}
+          className="fixed bottom-5 left-5 bg-blue-900 hover:bg-blue-700 text-white font-semibold px-6 h-16 rounded-full shadow-lg transition-transform hover:scale-110 text-lg z-50"
+        >
+          End Session
         </button>
       )}
     </div>

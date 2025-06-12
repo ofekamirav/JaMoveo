@@ -4,10 +4,13 @@ import SignupPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 import LivePage from "./pages/LivePage";
 import AdminResultsWithSearch from "./pages/AdminResultsWithSearch";
-import NoSessionPage from "./pages/NoSessionPage";
+import PlayerWaitingPage from "./pages/PlayerWaitingPage";
 import LandingPage from "./pages/LandingPage";
+import { useAuth } from "./services/AuthContext";
 
 function App() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
   return (
     <div className="bg-white-900 text-slate-200 min-h-screen font-sans">
       <Navbar />
@@ -25,7 +28,10 @@ function App() {
 
           <Route path="/live/:sessionId" element={<LivePage />} />
 
-          <Route path="/live/no-session" element={<NoSessionPage />} />
+          <Route
+            path="/live/session-ended"
+            element={<PlayerWaitingPage forAdmin={isAdmin} />}
+          />
         </Routes>
       </main>
     </div>

@@ -1,9 +1,15 @@
-import { Link, useNavigate, NavLink } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import React, { use } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../services/AuthContext";
 
-const Navbar = () => {
-  const { isLoggedIn, logout, name } = useAuth();
+const Navbar: React.FC = () => {
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   const activeLinkStyle = "bg-orange-600 text-white";
   const inactiveLinkStyle =
@@ -20,20 +26,18 @@ const Navbar = () => {
             >
               JaMoveo
             </Link>
-            {isLoggedIn && name && (
+
+            {user && (
               <span className="text-gray-800 font-medium text-sm hidden sm:inline">
-                Hello, {name}
+                Hello, {user.name}
               </span>
             )}
           </div>
 
           <div className="flex items-center space-x-2 md:space-x-4">
-            {isLoggedIn ? (
+            {user ? (
               <button
-                onClick={() => {
-                  logout();
-                  navigate("/");
-                }}
+                onClick={handleLogout}
                 className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300"
               >
                 Logout
