@@ -16,6 +16,7 @@ const AdminResultsWithSearch: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isCreatingSession, setIsCreatingSession] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
 
   const { accessToken } = useAuth();
 
@@ -26,11 +27,16 @@ const AdminResultsWithSearch: React.FC = () => {
     setQuery(initialQuery);
     if (initialQuery) {
       fetchResults(initialQuery);
+    } else {
+      setResults([]);
+      setHasSearched(false);
     }
   }, [location.search]);
 
   const fetchResults = async (searchQuery: string) => {
     setLoading(true);
+    setHasSearched(true);
+    setError("");
     try {
       if (!accessToken) throw new Error("User is not authenticated");
 
@@ -44,6 +50,7 @@ const AdminResultsWithSearch: React.FC = () => {
       setError("");
     } catch (err: any) {
       setError(err.message);
+      setResults([]);
     } finally {
       setLoading(false);
     }
@@ -51,7 +58,12 @@ const AdminResultsWithSearch: React.FC = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!query.trim()) return;
+    if (!query.trim()) {
+      setResults([]);
+      setHasSearched(false);
+      navigate("/admin");
+      return;
+    }
     navigate(`/admin/?q=${encodeURIComponent(query)}`);
   };
 
@@ -84,7 +96,7 @@ const AdminResultsWithSearch: React.FC = () => {
     }
   };
 
-  const showNoResultsMessage = !loading && query && results.length === 0;
+  const showNoResultsMessage = !loading && hasSearched && results.length === 0;
 
   return (
     <div className="max-w-4xl mx-auto mt-12 px-4">
